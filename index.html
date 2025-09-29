@@ -1,811 +1,1339 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap" as="style" onload="this.rel='stylesheet'" />
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap" /></noscript>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap"
+      as="style"
+      onload="this.rel='stylesheet'"
+    />
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;500;600;700&display=swap"
+    /></noscript>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <title>Undangan Pernikahan</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body,
+      html {
+        height: 100%;
+        background: black;
+        color: white;
+        font-family: "Montserrat", sans-serif;
+        font-weight: 500;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1,
+      h2,
+      h3,
+      .cursive-text {
+        font-family: "Great Vibes", cursive !important;
+        margin-bottom: 0.5em;
+        user-select: none;
+        text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9),
+          0 0 10px rgba(255, 255, 255, 0.2);
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes floatPetal {
+        0% {
+          transform: translate(0, 0) rotate(0deg);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.8;
+        }
+        100% {
+          transform: translate(var(--translateX), var(--translateY))
+            rotate(var(--rotate));
+          opacity: 0;
+        }
+      }
+
+#landing-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 1rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  position: relative;
+  overflow: hidden;
+}
+/* Overlay gradient */
+.landing-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
+  z-index: 1;
+}
+
+/* Animated circles background */
+.animated-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+  animation: float 20s infinite ease-in-out;
+}
+
+.circle-1 {
+  width: 300px;
+  height: 300px;
+  top: 10%;
+  left: -10%;
+  animation-delay: 0s;
+  animation-duration: 25s;
+}
+
+.circle-2 {
+  width: 400px;
+  height: 400px;
+  bottom: -10%;
+  right: -10%;
+  animation-delay: 5s;
+  animation-duration: 30s;
+}
+
+.circle-3 {
+  width: 250px;
+  height: 250px;
+  top: 50%;
+  right: 10%;
+  animation-delay: 10s;
+  animation-duration: 20s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(50px, -50px) scale(1.1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate(-30px, 30px) scale(0.9);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translate(70px, 20px) scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+/* Content wrapper */
+.landing-content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+}
+
+/* Wedding rings icon */
+.wedding-rings {
+  font-size: clamp(3rem, 10vw, 5rem);
+  margin-bottom: 1rem;
+  animation: ringsFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6));
+}
+
+@keyframes ringsFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+/* Glowing title */
+.glowing-title {
+  font-size: clamp(2.8rem, 9vw, 5rem);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
+  background: linear-gradient(90deg, #ffffff, #f0f0f0, #ffffff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: glowText 3s linear infinite, fadeInUp 1.2s forwards 0.3s;
+  opacity: 0;
+  transform: translateY(30px);
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes glowText {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Divider line */
+.divider-line {
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, white, transparent);
+  margin: 0 auto 2rem;
+  opacity: 0;
+  animation: fadeIn 1s forwards 0.8s;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Pulse button with glow effect */
+.pulse-button {
+  position: relative;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  border: 2px solid white;
+  color: white;
+  font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  font-weight: 700;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 
+              0 0 40px rgba(255, 255, 255, 0.2),
+              inset 0 0 20px rgba(255, 255, 255, 0.1);
+  transition: all 0.4s ease;
+  transform: translateY(20px);
+  opacity: 0;
+  animation: fadeInUp 1.2s forwards 1s, pulse 2s infinite 2s;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.pulse-button span {
+  position: relative;
+  z-index: 2;
+}
+
+.button-glow {
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  border-radius: 50px;
+  animation: rotateGlow 3s linear infinite;
+  opacity: 0;
+}
+
+@keyframes rotateGlow {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4), 
+                0 0 40px rgba(255, 255, 255, 0.2);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.6), 
+                0 0 60px rgba(255, 255, 255, 0.4);
+  }
+}
+
+.pulse-button:hover {
+  background: white;
+  color: #1a1a2e;
+  transform: translateY(-5px) scale(1.08);
+  box-shadow: 0 10px 40px rgba(255, 255, 255, 0.6),
+              0 0 60px rgba(255, 255, 255, 0.8);
+}
+
+.pulse-button:hover .button-glow {
+  animation-duration: 1.5s;
+}
+
+.pulse-button:active {
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* Guest name styling */
+#guest-name {
+  margin-top: 2rem;
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  font-style: italic;
+  opacity: 0;
+  animation: fadeInUp 1.2s forwards 1.5s;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  display: block;
+}
+
+.guest-name-text {
+  margin-top: 0.8rem;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  font-weight: bold;
+  display: block;
+  background: linear-gradient(135deg, #ffffff, #e0e0e0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.3);
+  }
+}
+
+/* Flower petals enhancement */
+.flower-petal {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+  animation: floatPetal 6s ease-in-out forwards;
+}
+
+@keyframes floatPetal {
+  0% { 
+    transform: translate(0, 0) rotate(0deg); 
+    opacity: 0; 
+  }
+  10% { 
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: translate(var(--translateX), var(--translateY)) rotate(var(--rotate)); 
+    opacity: 0; 
+  }
+}
+
+/* Mobile responsive */
+@media screen and (max-width: 768px) {
+  .guest-name-text { 
+    font-size: clamp(1.5rem, 6vw, 2rem); 
+  }
   
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  .wedding-rings {
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+  }
   
-  <title>Undangan Pernikahan</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body, html {
-      height: 100%;
-      background: black;
-      color: white;
-      font-family: "Montserrat", sans-serif;
-      font-weight: 500;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    h1, h2, h3, .cursive-text {
-      font-family: "Great Vibes", cursive !important;
-      margin-bottom: 0.5em;
-      user-select: none;
-      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(255, 255, 255, 0.2);
-    }
-
-    @keyframes fadeInUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes floatPetal {
-      0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-      10% { opacity: 0.8; }
-      100% { transform: translate(var(--translateX), var(--translateY)) rotate(var(--rotate)); opacity: 0; }
-    }
-
-    #landing-page {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 0 1rem;
-      background: linear-gradient(135deg, #222222, #111111);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .flower-petal {
-      position: absolute;
-      width: 25px;
-      height: 25px;
-      opacity: 0;
-      pointer-events: none;
-      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
-    }
-
-    #landing-page h1 {
-      font-size: clamp(2.6rem, 8vw, 4.5rem);
-      margin-bottom: 1.2rem;
-      letter-spacing: 0.05em;
-      transform: translateY(20px);
-      opacity: 0;
-      animation: fadeInUp 1.2s forwards 0.3s;
-    }
-
-    #landing-page button {
-      cursor: pointer;
-      background-color: rgba(255, 255, 255, 0.15);
-      border: 2px solid white;
-      color: white;
-      font-size: clamp(1rem, 3vw, 1.4rem);
-      padding: 0.85rem 2.5rem;
-      border-radius: 40px;
-      font-weight: 600;
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-      transition: all 0.4s;
-      transform: translateY(20px);
-      opacity: 0;
-      animation: fadeInUp 1.2s forwards 0.8s;
-    }
-
-    #landing-page button:hover {
-      background-color: white;
-      color: black;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 1);
-      transform: translateY(-3px) scale(1.05);
-    }
-
-    #guest-name {
-      margin-top: 1.2rem;
-      font-size: 20px;
-      font-style: italic;
-      opacity: 0;
-      animation: fadeInUp 1.2s forwards 1.3s;
-    }
-
-    .guest-name-text {
-      margin-top: 1rem;
-      font-size: 50px;
-      font-weight: bold;
-      display: block;
-    }
-
-    #slider {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      display: none;
-    }
-
-    .slide {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      transition: transform 1.25s, opacity 1.25s;
-      opacity: 0;
-      transform: scale(1.08);
-      pointer-events: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-      flex-direction: column;
-    }
-
-    .slide.active { opacity: 1; transform: scale(1); pointer-events: auto; }
-
-    #slide1 .overlay {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-      padding: 4rem 2rem 2rem;
-      opacity: 0;
-      transition: all 1.25s;
-      backdrop-filter: brightness(0.6);
-    }
-
-    #slide1.overlay-visible .overlay { 
-      background-color: rgba(0, 0, 0, 0.2); 
-      opacity: 1; 
-    }
-
-    #slide1 .center-container {
-      position: relative;
-      width: min(260px, 70vw);
-      height: min(310px, 80vw);
-      margin-bottom: min(12rem, 25vh); /* Ubah dari 8rem ke 12rem untuk dorong ke atas */
-      margin-top: -4rem; /* Tambahkan ini untuk dorong lebih ke atas lagi */
-    }
-
-    #slide1 .gif {
-      position: absolute;
-      width: min(350px, 65vw);
-      height: min(350px, 65vw);
-      object-fit: contain;
-      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
-      border-radius: 50%;
-      opacity: 0;
-      transform: scale(0.8);
-      transition: all 0.75s;
-    }
-
-    #slide1.overlay-visible .gif { opacity: 1; transform: scale(1); }
-
-    #slide1 .names-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      z-index: 5;
-      opacity: 0;
-      transition: all 0.75s 0.5s;
-    }
-
-    #slide1.overlay-visible .names-container { opacity: 1; }
-
-    #slide1 .name-text, #slide1 .name-and {
-      font-size: clamp(2.6rem, 9vw, 4rem);
-      text-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 255, 255, 1);
-    }
-
-    #slide1 .name-and { 
-      font-size: clamp(2.4rem, 8vw, 3.8rem);
-    }
-
-    #slide1 p {
-      font-size: clamp(0.8rem, 3vw, 1.2rem);
-      max-width: min(400px, 90vw);
-      margin-top: auto;
-      margin-bottom: min(3rem, 10vh);
-      line-height: 1.6;
-      font-style: italic;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.75s 0.8s;
-      text-align: center;
-    }
-
-    #slide1.overlay-visible p { opacity: 1; transform: translateY(0); }
-
-    #slide2 .panel-left, #slide2 .panel-right {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(3px);
-      transition: all 1.2s;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #slide2 .panel-left { left: 0; }
-    #slide2 .panel-right { right: 0; }
-
-    #slide2.left-panel-visible .panel-left,
-    #slide2.right-panel-visible .panel-right { width: 50%; }
-
-    #slide2 .center-divider {
-      position: absolute;
-      top: 15%;
-      left: 50%;
-      transform: translateX(-50%) scaleY(0);
-      width: 1px;
-      height: 80%;
-      background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.9) 50%, transparent);
-      opacity: 0;
-      transition: all 1.5s;
-      z-index: 10;
-    }
-
-    #slide2.center-divider-visible .center-divider { 
-      transform: translateX(-50%) scaleY(1); 
-      opacity: 1; 
-    }
-
-    #slide2 .info-container {
-      width: min(320px, 90vw);
-      padding: 2rem;
-      opacity: 0;
-      transform: scale(0.9);
-      transition: all 0.8s 0.4s;
-      text-align: center;
-    }
-
-    #slide2.left-content-visible .left .info-container,
-    #slide2.right-content-visible .right .info-container { 
-      opacity: 1; 
-      transform: scale(1); 
-    }
-
-    #slide2 h3 {
-      font-size: clamp(1.3rem, 5vw, 2.2rem);
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 1);
-    }
-
-    #slide2 .parent-label { 
-      font-size: clamp(0.8rem, 2.5vw, 1rem); 
-      font-weight: 600; 
-      margin: 0.5rem 0; 
-    }
-
-    #slide2 .parent-name { 
-      font-size: clamp(0.8rem, 2.5vw, 1rem); 
-      margin: 0.1rem 0; 
-    }
-
-    #slide3 .overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 50%;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1rem 1.5rem;
-      text-align: center;
-      backdrop-filter: blur(4px);
-      transition: all 0.6s;
-      transform: translateY(20px);
-      opacity: 0;
-    }
-
-    #slide3.active .overlay { transform: translateY(0); opacity: 1; }
-
-    #slide3 h3 {
-     font-size: clamp(2rem, 8vw, 3.5rem); /* Ubah dari 1.2rem-2.2rem ke 2rem-3.5rem */
-     margin-bottom: 0.3em;
-    }
-
-    #slide3 .events-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      margin-top: 0.4rem;
-      gap: 0.2rem;
-    }
-
-    #slide3 .event-title {
-      font-family: "Great Vibes", cursive !important;
-      font-size: clamp(1.1rem, 4.5vw, 1.6rem);
-      margin: 0.1em 0;
-    }
-
-    #slide3 p {
-      margin: 0.2em 0; /* Ubah dari 0.1em ke 0.2em untuk spacing lebih baik */
-      font-size: clamp(1rem, 3.5vw, 1.3rem); /* Ubah dari 0.7rem-0.85rem ke 1rem-1.3rem */
-      line-height: 1.4; /* Ubah dari 1.2 ke 1.4 untuk readability */
-    }
-
-    #slide3 .event-divider {
-      width: 40%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-      margin: 0.2rem 0;
-    }
-
-    #slide4 .gallery-container {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      transition: all 1.2s;
-      overflow-y: auto;
-    }
-
-    #slide4.overlay-visible .gallery-container { opacity: 1; }
-
-    #slide4 .gallery-header {
-      text-align: center;
-      padding: 2rem 1rem 1rem;
-    }
-
-    #slide4 h3 {
-      font-size: clamp(1.8rem, 7vw, 3rem);
-      margin-bottom: 0.5rem;
-    }
-
-    #slide4 .photo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 0.8rem;
-      padding: 0 1rem;
-      margin-bottom: 2rem;
-    }
-
-    #slide4 .photo-item {
-      aspect-ratio: 1;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: all 0.4s;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    #slide4 .photo-item:hover { 
-      transform: scale(1.05); 
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2); 
-    }
-
-    #slide4 .photo-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    #slide4 .photo-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 2000;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    #slide4 .photo-modal.active { display: flex; opacity: 1; }
-
-    #slide4 .photo-modal img {
-      max-width: 90%;
-      max-height: 90%;
-      object-fit: contain;
-      border-radius: 8px;
-    }
-
-    #slide4 .close-modal {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
-      color: white;
-      font-size: 2rem;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    #slide4 .close-modal:hover { 
-      background: rgba(255, 255, 255, 0.3); 
-      transform: scale(1.1); 
-    }
-
-    #slide4 .comment-section {
-      padding: 0 1rem 2rem;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    #slide4 .comment-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    #slide4 .comment-header h4 {
-      font-family: "Great Vibes", cursive;
-      font-size: clamp(1.5rem, 5vw, 2.2rem);
-      margin-bottom: 0.5rem;
-    }
-
-    #slide4 .comment-form {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    #slide4 .form-group { margin-bottom: 1rem; }
-
-    #slide4 .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-      font-size: 0.9rem;
-    }
-
-    #slide4 .form-group input, 
-    #slide4 .form-group textarea {
-      width: 100%;
-      padding: 0.8rem;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      color: white;
-      font-size: 0.9rem;
-      transition: all 0.3s;
-    }
-
-    #slide4 .form-group input:focus, 
-    #slide4 .form-group textarea:focus {
-      outline: none;
-      border-color: rgba(255, 255, 255, 0.7);
-      background: rgba(255, 255, 255, 0.15);
-    }
-
-    #slide4 .form-group textarea { min-height: 80px; }
-
-    #slide4 .submit-btn {
-      width: 100%;
-      padding: 0.8rem 1.5rem;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      color: white;
-      font-size: 1rem;
-      font-weight: 600;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    #slide4 .submit-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-2px);
-    }
-
-    #slide4 .comments-list {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    #slide4 .comment-item {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-left: 3px solid rgba(255, 255, 255, 0.3);
-    }
-
-    #slide4 .comment-name {
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-      font-size: 0.95rem;
-    }
-
-    #slide4 .comment-text {
-      line-height: 1.5;
-      font-size: 0.9rem;
-    }
-
-    #slide4 .comment-time {
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.6);
-      margin-top: 0.5rem;
-      font-style: italic;
-    }
-
-    #slide4 .empty-comments {
-      text-align: center;
-      color: rgba(255, 255, 255, 0.6);
-      font-style: italic;
-      padding: 2rem;
-    }
-
-    .pagination-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 1rem;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .pagination-controls.visible { opacity: 1; }
-
-    .pagination-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 0.9rem;
-      min-width: 80px;
-    }
-
-    .pagination-btn:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .pagination-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-
-    .nav-button {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: rgba(255, 255, 255, 0.8);
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
-      font-weight: bold;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      z-index: 1100;
-      transition: all 0.25s;
-      opacity: 0.7;
-    }
-
-    .nav-button:hover {
-      color: white;
-      transform: translateY(-50%) scale(1.15);
-      opacity: 1;
-    }
-
-    #prev { left: 15px; }
-    #next { right: 15px; }
-
-    #music-control {
-      position: fixed;
-      bottom: 1.3rem;
-      right: 1.3rem;
-      background-color: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      color: white;
-      padding: 0.6rem;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      z-index: 1200;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s;
-    }
-
-    #music-control:hover {
-      background-color: rgba(255, 255, 255, 0.85);
-      color: black;
-      transform: scale(1.1);
-    }
-
-    #music-control svg {
-      fill: currentColor;
-      width: 24px;
-      height: 24px;
-    }
-
-    @media screen and (max-width: 768px) {
-      .guest-name-text { font-size: 25px; }
-      #slide3 .overlay { height: 55%; }
-      #slide4 .photo-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
-    }
-
-    @media screen and (max-width: 480px) {
-      .guest-name-text { font-size: 20px; }
-      #slide2 .panel-left, #slide2 .panel-right { width: 50%; }
-      #slide3 .overlay { height: 50%; }
-      #slide4 .photo-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
-      #music-control { bottom: 1rem; right: 1rem; width: 36px; height: 36px; }
-    }
-    #slide2 h3 {
-      font-family: "Montserrat", sans-serif !important;
-      font-weight: 700;
-      font-size: clamp(1.3rem, 5vw, 2.2rem);
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 15px rgba(255, 255, 255, 1);
-    }
-  </style>
-</head>
-<body>
-  <div id="landing-page">
-    <h1>Undangan Pernikahan</h1>
-    <button id="open-invitation">Buka Undangan</button>
-    <br>
+  .pulse-button {
+    padding: 0.85rem 2.2rem;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .guest-name-text { 
+    font-size: clamp(1.2rem, 5vw, 1.8rem); 
+  }
+  
+  .circle-1, .circle-2, .circle-3 {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+      .flower-petal {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        opacity: 0;
+        pointer-events: none;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+      }
+
+      #landing-page h1 {
+        font-size: clamp(2.6rem, 8vw, 4.5rem);
+        margin-bottom: 1.2rem;
+        letter-spacing: 0.05em;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 1.2s forwards 0.3s;
+      }
+
+      #landing-page button {
+        cursor: pointer;
+        background-color: rgba(255, 255, 255, 0.15);
+        border: 2px solid white;
+        color: white;
+        font-size: clamp(1rem, 3vw, 1.4rem);
+        padding: 0.85rem 2.5rem;
+        border-radius: 40px;
+        font-weight: 600;
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+        transition: all 0.4s;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 1.2s forwards 0.8s;
+      }
+
+      #landing-page button:hover {
+        background-color: white;
+        color: black;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+        transform: translateY(-3px) scale(1.05);
+      }
+
+      #guest-name {
+        margin-top: 1.2rem;
+        font-size: 20px;
+        font-style: italic;
+        opacity: 0;
+        animation: fadeInUp 1.2s forwards 1.3s;
+      }
+
+      .guest-name-text {
+        margin-top: 1rem;
+        font-size: 50px;
+        font-weight: bold;
+        display: block;
+      }
+
+      #slider {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        display: none;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        transition: transform 1.25s, opacity 1.25s;
+        opacity: 0;
+        transform: scale(1.08);
+        pointer-events: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        flex-direction: column;
+      }
+
+      .slide.active {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+      }
+
+      #slide1 .overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 4rem 2rem 2rem;
+        opacity: 0;
+        transition: all 1.25s;
+        backdrop-filter: brightness(0.6);
+      }
+
+      #slide1.overlay-visible .overlay {
+        background-color: rgba(0, 0, 0, 0.2);
+        opacity: 1;
+      }
+
+      #slide1 .center-container {
+        position: relative;
+        width: min(260px, 70vw);
+        height: min(310px, 80vw);
+        margin-bottom: min(
+          12rem,
+          25vh
+        ); /* Ubah dari 8rem ke 12rem untuk dorong ke atas */
+        margin-top: -4rem; /* Tambahkan ini untuk dorong lebih ke atas lagi */
+      }
+
+      #slide1 .gif {
+        position: absolute;
+        width: min(350px, 65vw);
+        height: min(350px, 65vw);
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.85));
+        border-radius: 50%;
+        opacity: 0;
+        transform: scale(0.8);
+        transition: all 0.75s;
+      }
+
+      #slide1.overlay-visible .gif {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      #slide1 .names-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 5;
+        opacity: 0;
+        transition: all 0.75s 0.5s;
+      }
+
+      #slide1.overlay-visible .names-container {
+        opacity: 1;
+      }
+
+      #slide1 .name-text,
+      #slide1 .name-and {
+        font-size: clamp(2.6rem, 9vw, 4rem);
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5),
+          0 0 15px rgba(255, 255, 255, 1);
+      }
+
+      #slide1 .name-and {
+        font-size: clamp(2.4rem, 8vw, 3.8rem);
+      }
+
+      #slide1 p {
+        font-size: clamp(0.8rem, 3vw, 1.2rem);
+        max-width: min(400px, 90vw);
+        margin-top: auto;
+        margin-bottom: min(3rem, 10vh);
+        line-height: 1.6;
+        font-style: italic;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.75s 0.8s;
+        text-align: center;
+      }
+
+      #slide1.overlay-visible p {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      #slide2 .panel-left,
+      #slide2 .panel-right {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(3px);
+        transition: all 1.2s;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #slide2 .panel-left {
+        left: 0;
+      }
+      #slide2 .panel-right {
+        right: 0;
+      }
+
+      #slide2.left-panel-visible .panel-left,
+      #slide2.right-panel-visible .panel-right {
+        width: 50%;
+      }
+
+      #slide2 .center-divider {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translateX(-50%) scaleY(0);
+        width: 1px;
+        height: 80%;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          rgba(255, 255, 255, 0.9) 50%,
+          transparent
+        );
+        opacity: 0;
+        transition: all 1.5s;
+        z-index: 10;
+      }
+
+      #slide2.center-divider-visible .center-divider {
+        transform: translateX(-50%) scaleY(1);
+        opacity: 1;
+      }
+
+      #slide2 .info-container {
+        width: min(320px, 90vw);
+        padding: 2rem;
+        opacity: 0;
+        transform: scale(0.9);
+        transition: all 0.8s 0.4s;
+        text-align: center;
+      }
+
+      #slide2.left-content-visible .left .info-container,
+      #slide2.right-content-visible .right .info-container {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      #slide2 h3 {
+        font-size: clamp(1.3rem, 5vw, 2.2rem);
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+      }
+
+      #slide2 .parent-label {
+        font-size: clamp(0.8rem, 2.5vw, 1rem);
+        font-weight: 600;
+        margin: 0.5rem 0;
+      }
+
+      #slide2 .parent-name {
+        font-size: clamp(0.8rem, 2.5vw, 1rem);
+        margin: 0.1rem 0;
+      }
+
+      #slide3 .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        max-height: 50%;
+        background: linear-gradient(
+          to top,
+          rgba(0, 0, 0, 0.9) 0%,
+          transparent 100%
+        );
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem 1.5rem 2rem;
+        text-align: center;
+        backdrop-filter: blur(4px);
+        transition: all 0.6s;
+        transform: translateY(20px);
+        opacity: 0;
+        overflow-y: auto; /* TAMBAHKAN INI */
+        overflow-x: hidden; /* TAMBAHKAN INI */
+      }
+
+      #slide3.active .overlay {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      #slide3 h3 {
+        font-size: clamp(
+          2rem,
+          8vw,
+          3.5rem
+        ); /* Ubah dari 1.2rem-2.2rem ke 2rem-3.5rem */
+        margin-bottom: 0.3em;
+      }
+
+      #slide3 .events-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-top: 0.4rem;
+        gap: 0.2rem;
+      }
+
+      #slide3 .event-title {
+        font-family: "Great Vibes", cursive !important;
+        font-size: clamp(1.1rem, 4.5vw, 1.6rem);
+        margin: 0.1em 0;
+      }
+
+      #slide3 p {
+        margin: 0.2em 0; /* Ubah dari 0.1em ke 0.2em untuk spacing lebih baik */
+        font-size: clamp(
+          1rem,
+          3.5vw,
+          1.3rem
+        ); /* Ubah dari 0.7rem-0.85rem ke 1rem-1.3rem */
+        line-height: 1.4; /* Ubah dari 1.2 ke 1.4 untuk readability */
+      }
+
+      #slide3 .event-divider {
+        width: 40%;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.8),
+          transparent
+        );
+        margin: 0.2rem 0;
+      }
+
+      #slide4 .gallery-container {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        display: flex;
+        flex-direction: column;
+        opacity: 0;
+        transition: all 1.2s;
+        overflow-y: auto;
+      }
+
+      #slide4.overlay-visible .gallery-container {
+        opacity: 1;
+      }
+
+      #slide4 .gallery-header {
+        text-align: center;
+        padding: 2rem 1rem 1rem;
+      }
+
+      #slide4 h3 {
+        font-size: clamp(1.8rem, 7vw, 3rem);
+        margin-bottom: 0.5rem;
+      }
+
+      #slide4 .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.8rem;
+        padding: 0 1rem;
+        margin-bottom: 2rem;
+      }
+
+      #slide4 .photo-item {
+        aspect-ratio: 1;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.4s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      #slide4 .photo-item:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+      }
+
+      #slide4 .photo-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      #slide4 .photo-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      #slide4 .photo-modal.active {
+        display: flex;
+        opacity: 1;
+      }
+
+      #slide4 .photo-modal img {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        border-radius: 8px;
+      }
+
+      #slide4 .close-modal {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        font-size: 2rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      #slide4 .close-modal:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      #slide4 .comment-section {
+        padding: 0 1rem 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      #slide4 .comment-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      #slide4 .comment-header h4 {
+        font-family: "Great Vibes", cursive;
+        font-size: clamp(1.5rem, 5vw, 2.2rem);
+        margin-bottom: 0.5rem;
+      }
+
+      #slide4 .comment-form {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      #slide4 .form-group {
+        margin-bottom: 1rem;
+      }
+
+      #slide4 .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      #slide4 .form-group input,
+      #slide4 .form-group textarea {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+      }
+
+      #slide4 .form-group input:focus,
+      #slide4 .form-group textarea:focus {
+        outline: none;
+        border-color: rgba(255, 255, 255, 0.7);
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      #slide4 .form-group textarea {
+        min-height: 80px;
+      }
+
+      #slide4 .submit-btn {
+        width: 100%;
+        padding: 0.8rem 1.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+
+      #slide4 .submit-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      #slide4 .comments-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      #slide4 .comment-item {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-left: 3px solid rgba(255, 255, 255, 0.3);
+      }
+
+      #slide4 .comment-name {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        font-size: 0.95rem;
+      }
+
+      #slide4 .comment-text {
+        line-height: 1.5;
+        font-size: 0.9rem;
+      }
+
+      #slide4 .comment-time {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.5rem;
+        font-style: italic;
+      }
+
+      #slide4 .empty-comments {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.6);
+        font-style: italic;
+        padding: 2rem;
+      }
+
+      .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .pagination-controls.visible {
+        opacity: 1;
+      }
+
+      .pagination-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.9rem;
+        min-width: 80px;
+      }
+
+      .pagination-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .pagination-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .nav-button {
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: clamp(1.8rem, 5vw, 2.8rem);
+        font-weight: bold;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        z-index: 1100;
+        transition: all 0.25s;
+        opacity: 0.7;
+      }
+
+      .nav-button:hover {
+        color: white;
+        transform: translateY(-50%) scale(1.15);
+        opacity: 1;
+      }
+
+      #prev {
+        left: 15px;
+      }
+      #next {
+        right: 15px;
+      }
+
+      #music-control {
+        position: fixed;
+        bottom: 1.3rem;
+        right: 1.3rem;
+        background-color: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: white;
+        padding: 0.6rem;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        z-index: 1200;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+      }
+
+      #music-control:hover {
+        background-color: rgba(255, 255, 255, 0.85);
+        color: black;
+        transform: scale(1.1);
+      }
+
+      #music-control svg {
+        fill: currentColor;
+        width: 24px;
+        height: 24px;
+      }
+
+      @media screen and (max-width: 768px) {
+        .guest-name-text {
+          font-size: 25px;
+        }
+        #slide3 .overlay {
+          height: 55%;
+        }
+        #slide4 .photo-grid {
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+      }
+
+      @media screen and (max-width: 480px) {
+        .guest-name-text {
+          font-size: 20px;
+        }
+        #slide2 .panel-left,
+        #slide2 .panel-right {
+          width: 50%;
+        }
+        #slide3 .overlay {
+          height: 50%;
+        }
+        #slide4 .photo-grid {
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        }
+        #music-control {
+          bottom: 1rem;
+          right: 1rem;
+          width: 36px;
+          height: 36px;
+        }
+      }
+      #slide2 h3 {
+        font-family: "Montserrat", sans-serif !important;
+        font-weight: 700;
+        font-size: clamp(1.3rem, 5vw, 2.2rem);
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 1);
+      }
+      /* Fix untuk Landscape Mode */
+      @media screen and (max-height: 600px) {
+        #slide3 .overlay {
+          height: 70%;
+          max-height: 70%;
+          padding-bottom: 3rem;
+        }
+
+        #slide3 h3 {
+          font-size: clamp(1.5rem, 6vw, 2.5rem);
+          margin-bottom: 0.3em;
+        }
+
+        #slide3 .event-title {
+          font-size: clamp(1.4rem, 5vw, 2rem);
+        }
+
+        #slide3 p {
+          font-size: clamp(0.85rem, 3vw, 1.1rem);
+          margin: 0.15em 0;
+        }
+
+        .open-maps-btn {
+          padding: 0.6rem 1.5rem;
+          font-size: clamp(0.8rem, 2.5vw, 1rem);
+          margin-top: 1rem;
+        }
+      }
+
+      /* Fix untuk Landscape sangat pendek */
+      @media screen and (max-height: 450px) {
+        #slide3 .overlay {
+          height: 80%;
+          max-height: 80%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+<div id="landing-page">
+  <div class="landing-overlay"></div>
+  <div class="animated-bg">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+  </div>
+  <div class="landing-content">
+    <div class="wedding-rings">💍</div>
+    <h1 class="glowing-title">Undangan Pernikahan</h1>
+    <div class="divider-line"></div>
+    <button id="open-invitation" class="pulse-button">
+      <span>Buka Undangan</span>
+      <div class="button-glow"></div>
+    </button>
     <span id="guest-name">Kepada <br />Yth: Bapak/Ibu/Saudara/i</span>
   </div>
+</div>
 
-  <div id="slider">
-    <div id="slide1" class="slide">
-      <div class="overlay">
-        <div class="center-container">
-          <div class="names-container">
-            <div class="name-text cursive-text">Roni</div>
-            <div class="name-and cursive-text">&</div>
-            <div class="name-text cursive-text">Yesiana</div>
+    <div id="slider">
+      <div id="slide1" class="slide">
+        <div class="overlay">
+          <div class="center-container">
+            <div class="names-container">
+              <div class="name-text cursive-text">Roni</div>
+              <div class="name-and cursive-text">&</div>
+              <div class="name-text cursive-text">Yesiana</div>
+            </div>
           </div>
-        </div>
-        <p>Dengan memohon Rahmat dan Ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri pernikahan kami</p>
-      </div>
-    </div>
-
-    <div id="slide2" class="slide">
-      <div class="panel-left left">
-        <div class="info-container">
-          <h3>ASRONI, S.H.</h3>
-          <div class="parents-info">
-            <br /><br />
-            <p class="parent-label">Putra dari</p>
-            <p class="parent-name">Bpk Saharuddin</p>
-            <p class="parent-name">-</p>
-          </div>
+          <p>
+            Dengan memohon Rahmat dan Ridho Allah SWT, kami mengundang
+            Bapak/Ibu/Saudara/i untuk menghadiri pernikahan kami
+          </p>
         </div>
       </div>
-      <div class="center-divider"></div>
-      <div class="panel-right right">
-        <div class="info-container">
-          <h3>YESIANA  SAPRIYANTI</h3>
-          <div class="parents-info">
-            <br /><br />
-            <p class="parent-label">Putri dari</p>
-            <p class="parent-name">Bpk Sapoan</p>
-            <p class="parent-name">-</p>
+
+      <div id="slide2" class="slide">
+        <div class="panel-left left">
+          <div class="info-container">
+            <h3>ASRONI, S.H.</h3>
+            <div class="parents-info">
+              <br /><br />
+              <p class="parent-label">Putra dari</p>
+              <p class="parent-name">Bpk Saharuddin</p>
+              <p class="parent-name">-</p>
+            </div>
+          </div>
+        </div>
+        <div class="center-divider"></div>
+        <div class="panel-right right">
+          <div class="info-container">
+            <h3>YESIANA SAPRIYANTI</h3>
+            <div class="parents-info">
+              <br /><br />
+              <p class="parent-label">Putri dari</p>
+              <p class="parent-name">Bpk Sapoan</p>
+              <p class="parent-name">-</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div id="slide3" class="slide">
-      <div class="overlay">
-        <h3>Rangkaian Acara</h3>
-        <div class="events-container">
-          <div class="event-divider"></div>
-          <div class="event-section">
-            <h4 class="event-title">Resepsi</h4>
-            <p>5 Oktober 2025</p>
-            <p>09:30 - 12:00 WITA</p>
-          </div>
-          <div class="event-section">
-            <p>Halaman yayasan pondok pesantren al muslimun nwdi</p>
-          </div>
-            <button onclick="window.open('https://maps.app.goo.gl/ay6Hf768QeK46aKy9', '_blank')" style="cursor: pointer; background-color: rgba(255, 255, 255, 0.15); border: 2px solid white; color: white; font-size: clamp(0.9rem, 3vw, 1.2rem); padding: 0.75rem 2rem; border-radius: 40px; font-weight: 600; box-shadow: 0 0 8px rgba(255, 255, 255, 0.7); transition: all 0.4s; margin-top: 1.5rem;">
+      <div id="slide3" class="slide">
+        <div class="overlay">
+          <h3>Rangkaian Acara</h3>
+          <div class="events-container">
+            <div class="event-divider"></div>
+            <div class="event-section">
+              <h4 class="event-title">Resepsi</h4>
+              <p>5 Oktober 2025</p>
+              <p>09:30 - 12:00 WITA</p>
+            </div>
+            <div class="event-section">
+              <p>Halaman yayasan pondok pesantren al muslimun nwdi</p>
+            </div>
+            <button
+              onclick="window.open('https://maps.app.goo.gl/ay6Hf768QeK46aKy9', '_blank')"
+              style="
+                cursor: pointer;
+                background-color: rgba(255, 255, 255, 0.15);
+                border: 2px solid white;
+                color: white;
+                font-size: clamp(0.9rem, 3vw, 1.2rem);
+                padding: 0.75rem 2rem;
+                border-radius: 40px;
+                font-weight: 600;
+                box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+                transition: all 0.4s;
+                margin-top: 1.5rem;
+              "
+            >
               Lihat Lokasi
             </button>
+          </div>
         </div>
       </div>
+
+      <div id="slide4" class="slide">
+        <div class="gallery-container">
+          <div class="gallery-header">
+            <h3>Galeri Foto</h3>
+            <p
+              style="
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.9rem;
+                margin-top: 0.5rem;
+              "
+            >
+              Kenangan indah kami
+            </p>
+          </div>
+          <div class="photo-grid" id="photo-grid"></div>
+          <div class="comment-section">
+            <div class="comment-header">
+              <h4>Ucapan & Doa</h4>
+              <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem">
+                Berikan ucapan terbaik untuk kami
+              </p>
+            </div>
+            <form class="comment-form" id="comment-form">
+              <div class="form-group">
+                <label for="comment-name">Nama</label>
+                <input
+                  type="text"
+                  id="comment-name"
+                  name="name"
+                  placeholder="Masukkan nama Anda"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="comment-text">Ucapan & Doa</label>
+                <textarea
+                  id="comment-text"
+                  name="comment"
+                  placeholder="Tuliskan ucapan dan doa terbaik untuk kami..."
+                  required
+                ></textarea>
+              </div>
+              <button type="submit" class="submit-btn">Kirim Ucapan</button>
+            </form>
+            <div class="comments-list" id="comments-list">
+              <div class="empty-comments">
+                Belum ada ucapan. Jadilah yang pertama memberikan ucapan!
+              </div>
+            </div>
+            <div class="pagination-controls" id="pagination-controls">
+              <button class="pagination-btn" id="prev-page">←</button>
+              <span class="pagination-info" id="pagination-info"
+                >Halaman 1 dari 1</span
+              >
+              <button class="pagination-btn" id="next-page">→</button>
+            </div>
+          </div>
+        </div>
+        <div class="photo-modal" id="photo-modal">
+          <button class="close-modal" id="close-modal">&times;</button>
+          <img id="modal-image" src="" alt="Foto wedding" />
+        </div>
+      </div>
+
+      <button id="prev" class="nav-button">❮</button>
+      <button id="next" class="nav-button">❯</button>
+
+      <button id="music-control">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"
+          ></path>
+        </svg>
+      </button>
+
+      <audio id="background-music" loop preload="none">
+        <source src="backgroundsound.mp3" type="audio/mpeg" />
+      </audio>
     </div>
 
-    <div id="slide4" class="slide">
-      <div class="gallery-container">
-        <div class="gallery-header">
-          <h3>Galeri Foto</h3>
-          <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; margin-top: 0.5rem;">Kenangan indah kami</p>
-        </div>
-        <div class="photo-grid" id="photo-grid"></div>
-        <div class="comment-section">
-          <div class="comment-header">
-            <h4>Ucapan & Doa</h4>
-            <p style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem;">Berikan ucapan terbaik untuk kami</p>
-          </div>
-          <form class="comment-form" id="comment-form">
-            <div class="form-group">
-              <label for="comment-name">Nama</label>
-              <input type="text" id="comment-name" name="name" placeholder="Masukkan nama Anda" required />
-            </div>
-            <div class="form-group">
-              <label for="comment-text">Ucapan & Doa</label>
-              <textarea id="comment-text" name="comment" placeholder="Tuliskan ucapan dan doa terbaik untuk kami..." required></textarea>
-            </div>
-            <button type="submit" class="submit-btn">Kirim Ucapan</button>
-          </form>
-          <div class="comments-list" id="comments-list">
-            <div class="empty-comments">Belum ada ucapan. Jadilah yang pertama memberikan ucapan!</div>
-          </div>
-          <div class="pagination-controls" id="pagination-controls">
-            <button class="pagination-btn" id="prev-page">←</button>
-            <span class="pagination-info" id="pagination-info">Halaman 1 dari 1</span>
-            <button class="pagination-btn" id="next-page">→</button>
-          </div>
-        </div>
-      </div>
-      <div class="photo-modal" id="photo-modal">
-        <button class="close-modal" id="close-modal">&times;</button>
-        <img id="modal-image" src="" alt="Foto wedding" />
-      </div>
-    </div>
+    <script>
+      (function () {
+        const firebaseConfig = {
+          apiKey: "AIzaSyDxJbJF78D-IlcoD3DhxAT599vmjQeV-Wc",
+          authDomain: "undangan-723eb.firebaseapp.com",
+          databaseURL:
+            "https://undangan-723eb-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "undangan-723eb",
+          storageBucket: "undangan-723eb.firebasestorage.app",
+          messagingSenderId: "118437447454",
+          appId: "1:118437447454:web:143caa5351cfd26074ab0f",
+        };
 
-    <button id="prev" class="nav-button">❮</button>
-    <button id="next" class="nav-button">❯</button>
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    <button id="music-control">
-      <svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"></path></svg>
-    </button>
+        const state = {
+          currentSlide: 0,
+          isTransitioning: false,
+          comments: [],
+          currentPage: 1,
+          commentsPerPage: 2,
+          galleryPhotos: [
+            "galeri1.jpg",
+            "galeri2.jpg",
+            "galeri3.jpg",
+            "galeri4.jpg",
+            "galeri5.jpg",
+          ],
+          slideBackgrounds: [
+            "background_0.jpg",
+            "background_1_ganti.jpg",
+            "background_2_ganti.jpg",
+            "background_3_ganti.jpg",
+          ],
+          autoSlideInterval: null,
+          autoSlideEnabled: true,
+        };
 
-    <audio id="background-music" loop preload="none">
-      <source src="backgroundsound.mp3" type="audio/mpeg" />
-    </audio>
-  </div>
+        function getEl(id) {
+          return document.getElementById(id);
+        }
+        function getEls(sel) {
+          return document.querySelectorAll(sel);
+        }
 
-  <script>
-    (function() {
-      const firebaseConfig = {
-        apiKey: "AIzaSyDxJbJF78D-IlcoD3DhxAT599vmjQeV-Wc",
-        authDomain: "undangan-723eb.firebaseapp.com",
-        databaseURL: "https://undangan-723eb-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "undangan-723eb",
-        storageBucket: "undangan-723eb.firebasestorage.app",
-        messagingSenderId: "118437447454",
-        appId: "1:118437447454:web:143caa5351cfd26074ab0f"
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-
-      const state = {
-        currentSlide: 0,
-        isTransitioning: false,
-        comments: [],
-        currentPage: 1,
-        commentsPerPage: 2,
-        galleryPhotos: ["galeri1.jpg", "galeri2.jpg", "galeri3.jpg","galeri4.jpg","galeri5.jpg"],
-        slideBackgrounds: ["background_0.jpg", "background_1_ganti.jpg", "background_2_ganti.jpg", "background_3_ganti.jpg"],
-        autoSlideInterval: null,
-        autoSlideEnabled: true
-      };
-
-      function getEl(id) { return document.getElementById(id); }
-      function getEls(sel) { return document.querySelectorAll(sel); }
-
-      function createPetal() {
-        const colors = ["#ffb3ba", "#ffdfba", "#ffffba", "#baffc9", "#bae1ff"];
-        const petal = document.createElement("div");
-        petal.className = "flower-petal";
-        petal.style.cssText = `
-          background-color: ${colors[Math.floor(Math.random() * colors.length)]};
+        function createPetal() {
+          const colors = [
+            "#ffb3ba",
+            "#ffdfba",
+            "#ffffba",
+            "#baffc9",
+            "#bae1ff",
+          ];
+          const petal = document.createElement("div");
+          petal.className = "flower-petal";
+          petal.style.cssText = `
+          background-color: ${
+            colors[Math.floor(Math.random() * colors.length)]
+          };
           left: ${Math.random() * 100}%;
           top: ${Math.random() * 50 + 20}%;
           border-radius: ${Math.random() * 40 + 30}%;
@@ -813,243 +1341,287 @@
           --translateY: ${Math.random() * 100 + 50}px;
           --rotate: ${Math.random() * 360}deg;
         `;
-        getEl("landing-page").appendChild(petal);
-        
-        setTimeout(() => {
-          petal.style.animation = `floatPetal ${Math.random() * 3 + 4}s ease-in-out forwards`;
-          petal.onanimationend = () => {
-            petal.remove();
-            if (getEl("landing-page").style.display !== "none") createPetal();
-          };
-        }, Math.random() * 2000);
-      }
+          getEl("landing-page").appendChild(petal);
 
-      function initGallery() {
-        getEl("photo-grid").innerHTML = state.galleryPhotos.map((photo, i) => 
-          `<div class="photo-item" onclick="window.openModal('${photo}')">
+          setTimeout(() => {
+            petal.style.animation = `floatPetal ${
+              Math.random() * 3 + 4
+            }s ease-in-out forwards`;
+            petal.onanimationend = () => {
+              petal.remove();
+              if (getEl("landing-page").style.display !== "none") createPetal();
+            };
+          }, Math.random() * 2000);
+        }
+
+        function initGallery() {
+          getEl("photo-grid").innerHTML = state.galleryPhotos
+            .map(
+              (photo, i) =>
+                `<div class="photo-item" onclick="window.openModal('${photo}')">
             <img src="${photo}" alt="Foto ${i + 1}" loading="lazy">
           </div>`
-        ).join('');
-      }
+            )
+            .join("");
+        }
 
-      window.openModal = function(src) {
-        getEl("modal-image").src = src;
-        getEl("photo-modal").classList.add("active");
-      };
+        window.openModal = function (src) {
+          getEl("modal-image").src = src;
+          getEl("photo-modal").classList.add("active");
+        };
 
-      function closeModal() {
-        getEl("photo-modal").classList.remove("active");
-      }
+        function closeModal() {
+          getEl("photo-modal").classList.remove("active");
+        }
 
-      function applyBackgrounds() {
-        getEls(".slide").forEach((slide, i) => {
-          if (state.slideBackgrounds[i] && slide.id !== "slide4") {
-            slide.style.backgroundImage = `url(${state.slideBackgrounds[i]})`;
-          }
-        });
-      }
-
-      function showSlide(index) {
-        if (state.isTransitioning) return;
-        state.isTransitioning = true;
-        stopAutoSlide();
-
-        const slides = getEls(".slide");
-        if (index < 0) index = slides.length - 1;
-        if (index >= slides.length) index = 0;
-
-        slides.forEach(s => {
-          s.classList.remove("active", "overlay-visible", "left-panel-visible", "right-panel-visible", 
-            "center-divider-visible", "left-content-visible", "right-content-visible");
-        });
-
-        slides[index].classList.add("active");
-        
-        setTimeout(() => {
-          state.isTransitioning = false;
-          handleAnimations(index);
-          startAutoSlide();
-        }, 1000);
-
-        state.currentSlide = index;
-      }
-
-      function startAutoSlide() {
-        if (state.autoSlideEnabled && getEl("slider").style.display === "block") {
-          clearInterval(state.autoSlideInterval);
-          state.autoSlideInterval = setInterval(() => {
-            if (!state.isTransitioning) {
-              showSlide(state.currentSlide + 1);
+        function applyBackgrounds() {
+          getEls(".slide").forEach((slide, i) => {
+            if (state.slideBackgrounds[i] && slide.id !== "slide4") {
+              slide.style.backgroundImage = `url(${state.slideBackgrounds[i]})`;
             }
-          }, 7500);
+          });
         }
-      }
 
-      function stopAutoSlide() {
-        clearInterval(state.autoSlideInterval);
-      }
+        function showSlide(index) {
+          if (state.isTransitioning) return;
+          state.isTransitioning = true;
+          stopAutoSlide();
 
-      function handleAnimations(index) {
-        const slide = getEls(".slide")[index];
-        
-        if (slide.id === "slide1") {
-          slide.classList.add("overlay-visible");
-        } else if (slide.id === "slide2") {
-          slide.classList.add("left-panel-visible");
-          setTimeout(() => slide.classList.add("right-panel-visible"), 200);
-          setTimeout(() => slide.classList.add("center-divider-visible"), 600);
-          setTimeout(() => slide.classList.add("left-content-visible"), 1000);
-          setTimeout(() => slide.classList.add("right-content-visible"), 1200);
-        } else if (slide.id === "slide4") {
-          slide.classList.add("overlay-visible");
+          const slides = getEls(".slide");
+          if (index < 0) index = slides.length - 1;
+          if (index >= slides.length) index = 0;
+
+          slides.forEach((s) => {
+            s.classList.remove(
+              "active",
+              "overlay-visible",
+              "left-panel-visible",
+              "right-panel-visible",
+              "center-divider-visible",
+              "left-content-visible",
+              "right-content-visible"
+            );
+          });
+
+          slides[index].classList.add("active");
+
+          setTimeout(() => {
+            state.isTransitioning = false;
+            handleAnimations(index);
+            startAutoSlide();
+          }, 1000);
+
+          state.currentSlide = index;
         }
-      }
 
-      function toggleMusic() {
-        const music = getEl("background-music");
-        music.paused ? music.play() : music.pause();
-      }
-
-      function loadComments() {
-        db.ref("comments").on("value", snapshot => {
-          state.comments = [];
-          if (snapshot.exists()) {
-            Object.keys(snapshot.val()).forEach(key => {
-              state.comments.push({ id: key, ...snapshot.val()[key] });
-            });
-            state.comments.sort((a, b) => b.timestamp - a.timestamp);
+        function startAutoSlide() {
+          if (
+            state.autoSlideEnabled &&
+            getEl("slider").style.display === "block"
+          ) {
+            clearInterval(state.autoSlideInterval);
+            state.autoSlideInterval = setInterval(() => {
+              if (!state.isTransitioning) {
+                showSlide(state.currentSlide + 1);
+              }
+            }, 7500);
           }
-          renderComments();
-        });
-      }
-
-      function renderComments() {
-        const list = getEl("comments-list");
-        
-        if (state.comments.length === 0) {
-          list.innerHTML = '<div class="empty-comments">Belum ada ucapan. Jadilah yang pertama memberikan ucapan!</div>';
-          getEl("pagination-controls").classList.remove("visible");
-          return;
         }
 
-        const totalPages = Math.ceil(state.comments.length / state.commentsPerPage);
-        const start = (state.currentPage - 1) * state.commentsPerPage;
-        const end = start + state.commentsPerPage;
-        const current = state.comments.slice(start, end);
+        function stopAutoSlide() {
+          clearInterval(state.autoSlideInterval);
+        }
 
-        list.innerHTML = current.map(c => `
+        function handleAnimations(index) {
+          const slide = getEls(".slide")[index];
+
+          if (slide.id === "slide1") {
+            slide.classList.add("overlay-visible");
+          } else if (slide.id === "slide2") {
+            slide.classList.add("left-panel-visible");
+            setTimeout(() => slide.classList.add("right-panel-visible"), 200);
+            setTimeout(
+              () => slide.classList.add("center-divider-visible"),
+              600
+            );
+            setTimeout(() => slide.classList.add("left-content-visible"), 1000);
+            setTimeout(
+              () => slide.classList.add("right-content-visible"),
+              1200
+            );
+          } else if (slide.id === "slide4") {
+            slide.classList.add("overlay-visible");
+          }
+        }
+
+        function toggleMusic() {
+          const music = getEl("background-music");
+          music.paused ? music.play() : music.pause();
+        }
+
+        function loadComments() {
+          db.ref("comments").on("value", (snapshot) => {
+            state.comments = [];
+            if (snapshot.exists()) {
+              Object.keys(snapshot.val()).forEach((key) => {
+                state.comments.push({ id: key, ...snapshot.val()[key] });
+              });
+              state.comments.sort((a, b) => b.timestamp - a.timestamp);
+            }
+            renderComments();
+          });
+        }
+
+        function renderComments() {
+          const list = getEl("comments-list");
+
+          if (state.comments.length === 0) {
+            list.innerHTML =
+              '<div class="empty-comments">Belum ada ucapan. Jadilah yang pertama memberikan ucapan!</div>';
+            getEl("pagination-controls").classList.remove("visible");
+            return;
+          }
+
+          const totalPages = Math.ceil(
+            state.comments.length / state.commentsPerPage
+          );
+          const start = (state.currentPage - 1) * state.commentsPerPage;
+          const end = start + state.commentsPerPage;
+          const current = state.comments.slice(start, end);
+
+          list.innerHTML = current
+            .map(
+              (c) => `
           <div class="comment-item">
             <div class="comment-name">${escapeHtml(c.name)}</div>
             <div class="comment-text">${escapeHtml(c.text)}</div>
             <div class="comment-time">${formatDate(c.timestamp)}</div>
           </div>
-        `).join('');
+        `
+            )
+            .join("");
 
-        getEls(".comment-header h4")[0].textContent = `Ucapan & Doa (${state.comments.length})`;
-        
-        if (totalPages > 1) {
-          getEl("pagination-controls").classList.add("visible");
-          getEl("prev-page").disabled = state.currentPage === 1;
-          getEl("next-page").disabled = state.currentPage === totalPages;
-          getEl("pagination-info").textContent = `Halaman ${state.currentPage} dari ${totalPages}`;
-        } else {
-          getEl("pagination-controls").classList.remove("visible");
+          getEls(
+            ".comment-header h4"
+          )[0].textContent = `Ucapan & Doa (${state.comments.length})`;
+
+          if (totalPages > 1) {
+            getEl("pagination-controls").classList.add("visible");
+            getEl("prev-page").disabled = state.currentPage === 1;
+            getEl("next-page").disabled = state.currentPage === totalPages;
+            getEl(
+              "pagination-info"
+            ).textContent = `Halaman ${state.currentPage} dari ${totalPages}`;
+          } else {
+            getEl("pagination-controls").classList.remove("visible");
+          }
         }
-      }
 
-      function submitComment(e) {
-        e.preventDefault();
-        const name = getEl("comment-name").value.trim();
-        const text = getEl("comment-text").value.trim();
-        const btn = e.target.querySelector(".submit-btn");
-        
-        if (name && text) {
-          btn.disabled = true;
-          btn.textContent = "Mengirim...";
-          
-          db.ref("comments").push({
-            name, text, timestamp: Date.now()
-          }).then(() => {
-            getEl("comment-name").value = "";
-            getEl("comment-text").value = "";
-            btn.disabled = false;
-            btn.textContent = "Kirim Ucapan";
-            state.currentPage = 1;
-          }).catch(() => {
-            alert("Gagal mengirim. Coba lagi.");
-            btn.disabled = false;
-            btn.textContent = "Kirim Ucapan";
+        function submitComment(e) {
+          e.preventDefault();
+          const name = getEl("comment-name").value.trim();
+          const text = getEl("comment-text").value.trim();
+          const btn = e.target.querySelector(".submit-btn");
+
+          if (name && text) {
+            btn.disabled = true;
+            btn.textContent = "Mengirim...";
+
+            db.ref("comments")
+              .push({
+                name,
+                text,
+                timestamp: Date.now(),
+              })
+              .then(() => {
+                getEl("comment-name").value = "";
+                getEl("comment-text").value = "";
+                btn.disabled = false;
+                btn.textContent = "Kirim Ucapan";
+                state.currentPage = 1;
+              })
+              .catch(() => {
+                alert("Gagal mengirim. Coba lagi.");
+                btn.disabled = false;
+                btn.textContent = "Kirim Ucapan";
+              });
+          }
+        }
+
+        function escapeHtml(text) {
+          const div = document.createElement("div");
+          div.textContent = text;
+          return div.innerHTML;
+        }
+
+        function formatDate(timestamp) {
+          const diff = Math.floor((Date.now() - timestamp) / 60000);
+          if (diff < 1) return "Baru saja";
+          if (diff < 60) return `${diff} menit yang lalu`;
+          if (diff < 1440) return `${Math.floor(diff / 60)} jam yang lalu`;
+          return new Date(timestamp).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
           });
         }
-      }
 
-      function escapeHtml(text) {
-        const div = document.createElement("div");
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      function formatDate(timestamp) {
-        const diff = Math.floor((Date.now() - timestamp) / 60000);
-        if (diff < 1) return "Baru saja";
-        if (diff < 60) return `${diff} menit yang lalu`;
-        if (diff < 1440) return `${Math.floor(diff / 60)} jam yang lalu`;
-        return new Date(timestamp).toLocaleDateString("id-ID", {
-          day: "numeric", month: "long", year: "numeric"
-        });
-      }
-
-      function handleURLParams() {
-        const name = new URLSearchParams(window.location.search).get("name");
-        if (name) {
-          const el = document.createElement("div");
-          el.className = "guest-name-text";
-          el.textContent = decodeURIComponent(name);
-          getEl("guest-name").appendChild(el);
+        function handleURLParams() {
+          const name = new URLSearchParams(window.location.search).get("name");
+          if (name) {
+            const el = document.createElement("div");
+            el.className = "guest-name-text";
+            el.textContent = decodeURIComponent(name);
+            getEl("guest-name").appendChild(el);
+          }
         }
-      }
 
-      document.addEventListener("DOMContentLoaded", () => {
-        for (let i = 0; i < 12; i++) createPetal();
-        initGallery();
-        loadComments();
-        handleURLParams();
+        document.addEventListener("DOMContentLoaded", () => {
+          for (let i = 0; i < 12; i++) createPetal();
+          initGallery();
+          loadComments();
+          handleURLParams();
 
-        getEl("open-invitation").onclick = () => {
-          getEl("landing-page").style.display = "none";
-          getEl("slider").style.display = "block";
-          applyBackgrounds();
-          showSlide(0);
-          getEl("background-music").play().catch(() => {});
-        };
+          getEl("open-invitation").onclick = () => {
+            getEl("landing-page").style.display = "none";
+            getEl("slider").style.display = "block";
+            applyBackgrounds();
+            showSlide(0);
+            getEl("background-music")
+              .play()
+              .catch(() => {});
+          };
 
-        getEl("prev").onclick = () => showSlide(state.currentSlide - 1);
-        getEl("next").onclick = () => showSlide(state.currentSlide + 1);
-        getEl("music-control").onclick = toggleMusic;
-        getEl("close-modal").onclick = closeModal;
-        getEl("photo-modal").onclick = e => e.target.id === "photo-modal" && closeModal();
-        getEl("comment-form").onsubmit = submitComment;
-        getEl("prev-page").onclick = () => {
-          if (state.currentPage > 1) {
-            state.currentPage--;
-            renderComments();
-          }
-        };
-        getEl("next-page").onclick = () => {
-          const total = Math.ceil(state.comments.length / state.commentsPerPage);
-          if (state.currentPage < total) {
-            state.currentPage++;
-            renderComments();
-          }
-        };
+          getEl("prev").onclick = () => showSlide(state.currentSlide - 1);
+          getEl("next").onclick = () => showSlide(state.currentSlide + 1);
+          getEl("music-control").onclick = toggleMusic;
+          getEl("close-modal").onclick = closeModal;
+          getEl("photo-modal").onclick = (e) =>
+            e.target.id === "photo-modal" && closeModal();
+          getEl("comment-form").onsubmit = submitComment;
+          getEl("prev-page").onclick = () => {
+            if (state.currentPage > 1) {
+              state.currentPage--;
+              renderComments();
+            }
+          };
+          getEl("next-page").onclick = () => {
+            const total = Math.ceil(
+              state.comments.length / state.commentsPerPage
+            );
+            if (state.currentPage < total) {
+              state.currentPage++;
+              renderComments();
+            }
+          };
 
-        document.onkeydown = e => {
-          if (e.key === "ArrowLeft") showSlide(state.currentSlide - 1);
-          if (e.key === "ArrowRight") showSlide(state.currentSlide + 1);
-          if (e.key === "Escape") closeModal();
-        };
-      });
-    })();
-  </script>
-</body>
+          document.onkeydown = (e) => {
+            if (e.key === "ArrowLeft") showSlide(state.currentSlide - 1);
+            if (e.key === "ArrowRight") showSlide(state.currentSlide + 1);
+            if (e.key === "Escape") closeModal();
+          };
+        });
+      })();
+    </script>
+  </body>
 </html>
